@@ -290,8 +290,125 @@ elif page == "🌤️ هواشناسی زنده":
         st.subheader("جدول ۷ روزه")
         df7 = pd.DataFrame({"تاریخ": daily["time"], "حداقل": [round(x,1) for x in daily["temperature_2m_min"]], "حداکثر": [round(x,1) for x in daily["temperature_2m_max"]], "احتمال بارش": daily["precipitation_probability_max"], "بارش": [round(x,1) for x in daily["precipitation_sum"]], "ET₀": [round(x,1) for x in daily.get("et0_fao_evapotranspiration",[0]*7)], "وضعیت": [weather_code_to_text(c) for c in daily["weather_code"]]})
         st.dataframe(df7, use_container_width=True, hide_index=True)
-    else:
-        st.error("داده در دسترس نیست.")
+def page_jobs():
+    st.header("💼 کاریابی محلی ماهور")
+    st.write("در این بخش می‌توانید درخواست کار بدهید یا مهارت و خدمات خود را اعلام کنید.")
+
+    st.markdown("---")
+    
+    # فرم ثبت آگهی
+    with st.expander("➕ ثبت آگهی کاریابی جدید", expanded=False):
+        with st.form("job_form"):
+            job_type = st.selectbox("نوع آگهی", ["درخواست کار", "پیشنهاد کار / مهارت"])
+            title = st.text_input("عنوان آگهی (مثلاً: نیاز به تراکتور برای شخم)")
+            description = st.text_area("توضیحات کامل")
+            contact = st.text_input("راه ارتباطی (شماره تماس یا ایتا)")
+            
+            submitted = st.form_submit_button("ثبت آگهی")
+            
+            if submitted:
+                if title and description and contact:
+                    st.success("آگهی شما با موفقیت ثبت شد و پس از بررسی نمایش داده خواهد شد.")
+                    st.info("توجه: هر دو روز حداکثر ۲ تا ۳ آگهی جدید پذیرفته می‌شود.")
+                else:
+                    st.warning("لطفاً تمام فیلدها را پر کنید.")
+
+    st.markdown("---")
+    st.subheader("آگهی‌های فعلی")
+
+    jobs = get_local_jobs()
+    
+    # جدا کردن درخواست‌ها و پیشنهادها
+    requests = [j for j in jobs if j["type"] == "درخواست"]
+    offers = [j for j in jobs if j["type"] == "پیشنهاد کار"]
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("#### 🟠 درخواست‌های کار")
+        if requests:
+            for job in requests:
+                st.markdown(f"""
+                <div class="card" style="border-right:4px solid #e67e22; margin-bottom:12px;">
+                    <strong>{job['title']}</strong><br>
+                    <p style="margin:6px 0; font-size:0.9rem;">{job['text']}</p>
+                    <small>{job['contact']}</small>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("درخواستی وجود ندارد.")
+
+    with col2:
+        st.markdown("#### 🟢 پیشنهاد کار و مهارت")
+        if offers:
+            for job in offers:
+                st.markdown(f"""
+                <div class="card" style="border-right:4px solid #27ae60; margin-bottom:12px;">
+                    <strong>{job['title']}</strong><br>
+                    <p style="margin:6px 0; font-size:0.9rem;">{job['text']}</p>
+                    <small>{job['contact']}</small>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("پیشنهادی وجود ندارد.")
+    st.markdown("---")
+    
+    # فرم ثبت آگهی
+    with st.expander("➕ ثبت آگهی کاریابی جدید", expanded=False):
+        with st.form("job_form"):
+            job_type = st.selectbox("نوع آگهی", ["درخواست کار", "پیشنهاد کار / مهارت"])
+            title = st.text_input("عنوان آگهی (مثلاً: نیاز به تراکتور برای شخم)")
+            description = st.text_area("توضیحات کامل")
+            contact = st.text_input("راه ارتباطی (شماره تماس یا ایتا)")
+            
+            submitted = st.form_submit_button("ثبت آگهی")
+            
+            if submitted:
+                if title and description and contact:
+                    st.success("آگهی شما با موفقیت ثبت شد و پس از بررسی نمایش داده خواهد شد.")
+                    st.info("توجه: هر دو روز حداکثر ۲ تا ۳ آگهی جدید پذیرفته می‌شود.")
+                else:
+                    st.warning("لطفاً تمام فیلدها را پر کنید.")
+
+    st.markdown("---")
+    st.subheader("آگهی‌های فعلی")
+
+    jobs = get_local_jobs()
+    
+    # جدا کردن درخواست‌ها و پیشنهادها
+    requests = [j for j in jobs if j["type"] == "درخواست"]
+    offers = [j for j in jobs if j["type"] == "پیشنهاد کار"]
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("#### 🟠 درخواست‌های کار")
+        if requests:
+            for job in requests:
+                st.markdown(f"""
+                <div class="card" style="border-right:4px solid #e67e22; margin-bottom:12px;">
+                    <strong>{job['title']}</strong><br>
+                    <p style="margin:6px 0; font-size:0.9rem;">{job['text']}</p>
+                    <small>{job['contact']}</small>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("درخواستی وجود ندارد.")
+
+    with col2:
+        st.markdown("#### 🟢 پیشنهاد کار و مهارت")
+        if offers:
+            for job in offers:
+                st.markdown(f"""
+                <div class="card" style="border-right:4px solid #27ae60; margin-bottom:12px;">
+                    <strong>{job['title']}</strong><br>
+                    <p style="margin:6px 0; font-size:0.9rem;">{job['text']}</p>
+                    <small>{job['contact']}</small>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("پیشنهادی وجود ندارد.")
+        
 
 elif page == "📊 مقایسه مناطق":
     st.title("📊 مقایسه مناطق فارس")
